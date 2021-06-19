@@ -22,7 +22,7 @@ class AuthController {
                     email: user.email
                 }, constants.Secret, { expiresIn: 60 * 60 });
                 res.status(constants.STATUS_CODES.SUCCESS);
-                res.send({ data: { token } });
+                res.send({ data: { token, userId: user._id } });
             }
         } catch (err) {
             console.log(err);
@@ -33,7 +33,8 @@ class AuthController {
     }
     async login(req, res) {
         try {
-            const user = await authService.getByMobile(req.body.mobile);
+            console.log(req.body.email);
+            const user = await authService.getByEmail(req.body.email);
             if (user) {
                 const passwordCheck = await bcrypt.compare(req.body.password, user.password);
                 if (passwordCheck) {
@@ -43,14 +44,14 @@ class AuthController {
                         email: user.email
                     }, constants.Secret, { expiresIn: 60 * 60 });
                     res.status(constants.STATUS_CODES.SUCCESS);
-                    res.send({ data: { token } });
+                    res.send({ data: { token, userId: user._id } });
                 } else {
                     res.status(constants.STATUS_CODES.CONFLICT);
                     res.send({ error: 'conflict', errorDescription: 'Incorrect password' });
                 }
             } else {
                 res.status(constants.STATUS_CODES.CONFLICT);
-                res.send({ error: 'conflict', errorDescription: 'Mobile no not registered' });
+                res.send({ error: 'conflict', errorDescription: 'Email not registered' });
             }
         } catch (err) {
             console.log(err);
@@ -88,6 +89,7 @@ class AuthController {
         try {
             const user = await authService.getByEmail(req.body.email);
             const isExpired = (new Date() <= new Date(Number(req.body.resetPasswordExpiry))) ? false : true;
+            console.log(isExpired);
             if (isExpired) {
                 res.status(constants.STATUS_CODES.SUCCESS);
                 res.send({ error: 'invalid_request', errorDescription: 'Link expired' });
@@ -97,9 +99,52 @@ class AuthController {
                 const updatedUser = await authService.updatePassword({ id: user._id, resetPasswordExpiry: null, resetPasswordToken: null, password: hashedPassword });
                 res.status(constants.STATUS_CODES.SUCCESS);
                 res.send({ status: 'Updated successfully', data: updatedUser });
+            } else {
+                res.send({ error: 'invalid_request', errorDescription: 'Please try again with different link' });
             }
         } catch (error) {
+            console.log(error);
             res.status(constants.STATUS_CODES.EXCEPTION);
+            res.send({ error: 'server_error', errorDescription: error });
+        }
+    }
+
+    async myProfile(req, res) {
+        try {
+            const user = await authService.byUserId(req.params.userId);
+            res.status(constants.STATUS_CODES.SUCCESS);
+            res.send({status: 'success', user});
+        } catch (error) {
+            res.status(constants.STATUS_CODES.EXCEPTION);
+            res.send({ error: 'server_error', errorDescription: err });
+        }
+    }
+
+    async users(req, res) {
+        try {
+            const users = await authService.users();
+            res.status(constants.STATUS_CODES.SUCCESS);
+            res.send({status: 'success', users});
+        } catch (error) {
+            res.status(constants.STATUS_CODES.EXCEPTION);
+            res.send({ error: 'server_error', errorDescription: err });
+        }
+    }
+
+    async updateProfile(req, res) {
+        try {
+            const user = await authService.getByEmail(req.body.email);
+            if (user) {
+                const updatedUser = await authService.updateUser(req.params.userId, req.body);
+                res.status(constants.STATUS_CODES.SUCCESS);
+                res.send({ data: {user: updatedUser } });                
+            } else {
+                res.status(constants.STATUS_CODES.CONFLICT);
+                res.send({ error: 'conflict', errorDescription: 'Email not registered' });
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(constants.STATUS_CODES.EXCEPTION)
             res.send({ error: 'server_error', errorDescription: err });
         }
     }

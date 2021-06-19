@@ -7,9 +7,9 @@ class ProductCtrl {
     async get(req, res) {
         try {
             const products = await productService.getAll();
-            products.map(product => {
-                product.imgSrc = `${req.protocol}://${req.hostname}:${config.portNo}/${product.imgSrc}`;
-            });
+            // products.map(product => {
+            //     product.imgSrc = `${req.protocol}://${req.hostname}:${config.portNo}/${product.imgSrc}`;
+            // });
             if (products) {
                 res.status(constants.STATUS_CODES.SUCCESS);
                 res.json({data: products});
@@ -32,7 +32,7 @@ class ProductCtrl {
             const jsonProduct = product.toJSON();
             jsonProduct.reviews = reviews;
             // jsonProduct.avgRating = 
-            jsonProduct.imgSrc = `${req.protocol}://${req.hostname}:${config.portNo}/${product.imgSrc}`;
+            // jsonProduct.imgSrc = `${req.protocol}://${req.hostname}:${config.portNo}/${product.imgSrc}`;
             if (jsonProduct) {
                 res.status(constants.STATUS_CODES.SUCCESS);
                 res.json({data: jsonProduct});

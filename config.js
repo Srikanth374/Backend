@@ -1,5 +1,6 @@
 module.exports = Object.freeze({
-    portNo: 3000,
-    MONGODB_URL: 'mongodb://localhost:27017/dl-ec',
+    portNo: 4000,
+    MONGODB_URL: 'mongodb+srv://admin:ibwDmjYzFUPcN97C@cluster0.dz8ql.mongodb.net/ecommerce?retryWrites=true&w=majority',
     FRONTEND_URL: 'http://localhost:4200'
 });
+

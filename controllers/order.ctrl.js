@@ -7,8 +7,8 @@ class OrderController {
     async createOrderId(req, res) {
         try {
             const rpInstance = new Razorpay({
-                key_id: 'rzp_test_gIDqRtqTHbXVYT',
-                key_secret: 'X8mGVBsz0ntN2zCnFpVxxFou'
+                key_id: 'rzp_test_w3eDVaSRhlybFS',
+                key_secret: 'pYjShuDtkNVhI059zeDdBRnf'
             });
             const order = await rpInstance.orders.create({
                 amount: req.body.totalAmount * 100,
@@ -28,15 +28,15 @@ class OrderController {
     }
     async insert(req, res) {
         try {
-            const decodedToken = await jwt.decode(req.headers.authorization);
-            req.body.userId = decodedToken.userId;
+            // const decodedToken = await jwt.decode(req.headers.authorization);
+            // req.body.userId = decodedToken.userId;
             const order = await orderService.create(req.body);
             res.status(constants.STATUS_CODES.CREATED);
             res.send({status: 'Created successfully', order});
         } catch(error) {
-            console.log(err);
+            console.log(error);
             res.status(constants.STATUS_CODES.EXCEPTION)
-            res.send({ error: 'server_error', errorDescription: err });
+            res.send({ error: 'server_error', errorDescription: error });
         }
 
     }

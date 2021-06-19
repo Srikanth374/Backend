@@ -4,7 +4,7 @@ const config = require('../config');
 const MailerService = {
     sendMail: (data) => {
         return new Promise( async (resolve, reject) => {
-            let frontEndUrl = `${config.FRONTEND_URL}/updatePassword?email=${data.email}&token=${data.resetPasswordToken}&expiry=${data.resetPasswordExpiry}`;
+            let frontEndUrl = `${config.FRONTEND_URL}/#/auth/update-password?email=${data.email}&token=${data.resetPasswordToken}&expiry=${data.resetPasswordExpiry}`;
             // let testAccount = await nodemailer.createTestAccount();
             // console.log(testAccount);
             let transporter = nodemailer.createTransport({
